@@ -1,0 +1,37 @@
+This is a doctest based on positive cases for hipchat.py
+Each '>>' line is run as if in a python shell, and counts as a test.
+The next line, if not '>>' is the expected output of the previous line.
+If anything doesn't match exactly (including trailing spaces), the test fails.
+run it as it described below:
+  python -m doctest positive_tests.txt
+  python -m doctest -v positive_tests.txt
+
+
+
+>>> from hipchat import MessageParser
+>>> hipTest_1 = MessageParser('@chris; you around? <a href="http://www.google.com">google site</a>', autoparsing=False)
+>>> hipTest_1.get_mentions
+['chris']
+>>> hipTest_1.get_rtf_url
+['<a href="http://www.google.com">google site</a>']
+>>> hipTest_1.get_url
+'http://www.google.com'
+>>> hipTest_1.get_title('http://www.google.com')
+'Google'
+>>> hipTest_1.get_links
+[{'url': '<a href="http://www.google.com">google site</a>', 'title': 'Google'}]
+>>> hipTest_1 = MessageParser('Good morning! (coffee) () (4ai) (un:own) (itwillben0tparsed)')
+>>> hipTest_1.get_emoticons
+['coffee', '4ai']
+>>> hipTest_1 = MessageParser('@chris you around?')
+>>> hipTest_1.to_json()
+{'mentions': ['chris']}
+>>> hip_parsed_2 = MessageParser('Good morning! (megusta) (coffee)')
+>>> hip_parsed_2.to_json()
+{'emoticons': ['megusta', 'coffee']}
+>>> hip_parsed_3 = MessageParser('Olympics are starting soon; <a href="http://www.nbcolympics.com/" target="_blank"><b><span style="color:red;text-decoration:none">MailScanner has detected a possible fraud attempt from "www.nbcolympics.com" claiming to be</span></b><span style="color:#3572b0;text-decoration:none"> http://www.nbcolympics.com"</span></a>')
+>>> hip_parsed_3.to_json()
+{'links': [{'url': '<a href="http://www.nbcolympics.com/" target="_blank"><b><span style="color:red;text-decoration:none">MailScanner has detected a possible fraud attempt from "www.nbcolympics.com" claiming to be</span></b><span style="color:#3572b0;text-decoration:none"> http://www.nbcolympics.com"</span></a>', 'title': 'NBC Olympics | Home of the 2016 Olympic Games in Rio'}]}
+>>> hip_parsed_4 = MessageParser('@bob @john (success) such a cool feature; <a href="https://twitter.com/jdorfman/status/430511497475670016" target="_blank"><span style="color:#3572b0;text-decoration:none">https://twitter.com/<wbr>jdorfman/status/<wbr>430511497475670016"</span></a>')
+>>> hip_parsed_4.to_json()
+{'mentions': ['bob', 'john'], 'emoticons': ['success'], 'links': [{'url': '<a href="https://twitter.com/jdorfman/status/430511497475670016" target="_blank"><span style="color:#3572b0;text-decoration:none">https://twitter.com/<wbr>jdorfman/status/<wbr>430511497475670016"</span></a>', 'title': 'Justin Dorfman on Twitter: &quot;nice @littlebigdetail from @HipChat (shows hex colors when pasted in chat). http://t.co/7cI6Gjy5pq&quot;'}]}
